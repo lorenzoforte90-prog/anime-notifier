@@ -52,17 +52,26 @@
           2,
           3,
           4,
-          5,
-          6,
-          7,
-          8,
-          9
+          6
         ]
       },
       {
         "aniListId": 213702,
         "seasonNumber": 2,
         "seasonName": "Witch Hat Atelier Season 2",
+        "watchedEpisodes": []
+      }
+    ]
+  },
+  {
+    "seriesId": "sr_11061_1785588160402",
+    "alias": "Hunter x Hunter (2011)",
+    "poster": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx11061-y5gsT1hoHuHw.png",
+    "seasons": [
+      {
+        "aniListId": 11061,
+        "seasonNumber": 1,
+        "seasonName": "Hunter x Hunter (2011)",
         "watchedEpisodes": []
       }
     ]
