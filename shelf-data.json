@@ -1,0 +1,21 @@
+[
+  {
+    "seriesId": "sr_116674_1785587796668",
+    "alias": "Bleach",
+    "poster": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx169755-Rqb7MjnzdTc6.jpg",
+    "seasons": [
+      {
+        "aniListId": 169755,
+        "seasonNumber": 1,
+        "seasonName": "BLEACH: Thousand-Year Blood War - The Conflict",
+        "watchedUpTo": 0
+      },
+      {
+        "aniListId": 185874,
+        "seasonNumber": 2,
+        "seasonName": "BLEACH: Thousand-Year Blood War - The Calamity",
+        "watchedUpTo": 0
+      }
+    ]
+  }
+]
