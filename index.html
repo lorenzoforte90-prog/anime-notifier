@@ -96,6 +96,17 @@
   .seasons.open{display:block;}
   .season-row{display:flex;align-items:center;gap:10px;padding:10px 14px 10px 20px;border-top:1px solid var(--line);}
   .season-row:first-child{border-top:none;}
+  .ep-toggle{background:none;border:1px solid var(--line);color:var(--text-dim);font-size:11px;padding:4px 8px;flex-shrink:0;}
+  .ep-toggle:hover{color:var(--text);border-color:var(--live);}
+  .episode-list{max-height:340px;overflow-y:auto;border-top:1px solid var(--line);background:rgba(10,9,15,0.35);}
+  .episode-row{display:flex;align-items:center;gap:10px;padding:7px 14px 7px 30px;border-top:1px solid var(--line);}
+  .episode-row:first-child{border-top:none;}
+  .episode-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--teal,#3adbc0);flex-shrink:0;cursor:pointer;}
+  .episode-row img{width:44px;height:26px;object-fit:cover;border-radius:4px;flex-shrink:0;background:var(--surface2);}
+  .episode-row .etitle{font-size:12.5px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .episode-row .etitle .en{font-family:'Space Mono';color:var(--gold);margin-right:6px;}
+  .episode-row.watched .etitle{color:var(--text-dim);text-decoration:line-through;}
+  .ep-loading{padding:10px 14px 10px 30px;color:var(--text-dim);font-size:12px;}
   .season-label{flex:1;min-width:0;}
   .season-label .name{font-size:13px;font-weight:600;}
   .season-label .name .snum{color:var(--gold);font-family:'Space Mono';margin-right:6px;}
@@ -208,6 +219,16 @@ async function loadSeries(){
     const data = await res.json();
     fileSha = data.sha;
     series = JSON.parse(b64DecodeUnicode(data.content.replace(/\n/g,'')));
+    // migrazione dal vecchio formato (contatore singolo) al nuovo (lista episodi)
+    let migrated = false;
+    series.forEach(s=> s.seasons.forEach(se=>{
+      if(se.watchedUpTo !== undefined && se.watchedEpisodes === undefined){
+        se.watchedEpisodes = Array.from({length: se.watchedUpTo}, (_,i)=> i+1);
+        delete se.watchedUpTo;
+        migrated = true;
+      }
+    }));
+    if(migrated) await saveSeries();
   }catch(e){
     console.error('Errore lettura dati remoti', e);
     document.getElementById('lastSync').textContent = 'errore connessione GitHub';
@@ -409,7 +430,7 @@ async function openConfirmForRoot(rootId){
       const checked = row.querySelector('[data-check]').checked;
       if(!checked) return;
       const name = row.querySelector('[data-name]').value.trim() || ('Stagione '+n);
-      seasons.push({ aniListId:id, seasonNumber:n, seasonName:name, watchedUpTo:0 });
+      seasons.push({ aniListId:id, seasonNumber:n, seasonName:name, watchedEpisodes:[] });
       n++;
     });
     if(!seasons.length){ return; }
@@ -486,11 +507,31 @@ function renderUpcoming(){
 function seriesHasNew(s){
   return s.seasons.some(se=>{
     const m = mediaCache[se.aniListId];
-    return m && se.watchedUpTo < latestAired(m);
+    return m && (se.watchedEpisodes||[]).length < latestAired(m);
   });
 }
 function seriesIsAiring(s){
   return s.seasons.some(se=> mediaCache[se.aniListId]?.status === 'RELEASING');
+}
+
+let openSeasons = new Set();
+let episodeCache = {};
+
+async function fetchEpisodeTitles(aniListId){
+  if(episodeCache[aniListId]) return episodeCache[aniListId];
+  try{
+    const data = await anilistQuery(`
+      query($id:Int){ Media(id:$id){ streamingEpisodes{ title thumbnail } } }`, {id:aniListId});
+    const eps = (data.Media.streamingEpisodes||[]).map((e,i)=>{
+      const match = e.title && e.title.match(/^Episode\s+(\d+)/i);
+      return { num: match ? parseInt(match[1]) : i+1, title: e.title || null, thumb: e.thumbnail || null };
+    });
+    episodeCache[aniListId] = eps;
+    return eps;
+  }catch(e){
+    episodeCache[aniListId] = [];
+    return [];
+  }
 }
 
 function renderShelf(){
@@ -519,22 +560,29 @@ function renderShelf(){
         ${s.seasons.map(se=>{
           const m = mediaCache[se.aniListId];
           const latest = latestAired(m);
-          const pct = latest ? Math.min(100, Math.round((se.watchedUpTo/latest)*100)) : 0;
-          return `<div class="season-row">
-            <div class="season-label">
-              <div class="name"><span class="snum">S${se.seasonNumber}</span>${se.seasonName}</div>
-              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+          const watched = (se.watchedEpisodes||[]).length;
+          const pct = latest ? Math.min(100, Math.round((watched/latest)*100)) : 0;
+          const seasonOpen = openSeasons.has(se.aniListId);
+          return `<div>
+            <div class="season-row">
+              <div class="season-label">
+                <div class="name"><span class="snum">S${se.seasonNumber}</span>${se.seasonName}</div>
+                <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+              </div>
+              <div class="n">${watched}/${latest}</div>
+              <button class="ep-toggle" data-ep-toggle="${se.aniListId}">${seasonOpen?'nascondi ep.':'episodi ▾'}</button>
             </div>
-            <div class="stepper">
-              <button class="small" data-dec="${s.seriesId}|${se.aniListId}" ${se.watchedUpTo<=0?'disabled':''}>–</button>
-              <div class="n">${se.watchedUpTo}/${latest}</div>
-              <button class="small" data-inc="${s.seriesId}|${se.aniListId}" ${se.watchedUpTo>=latest?'disabled':''}>+</button>
-            </div>
+            <div class="episode-list-holder" data-holder="${se.aniListId}" style="display:${seasonOpen?'block':'none'}"></div>
           </div>`;
         }).join('')}
       </div>
     </div>`;
   }).join('');
+
+  openSeasons.forEach(id=>{
+    const holder = el.querySelector(`[data-holder="${id}"]`);
+    if(holder) renderEpisodeList(id, holder);
+  });
 
   el.querySelectorAll('[data-toggle]').forEach(headEl=>headEl.addEventListener('click', (ev)=>{
     if(ev.target.closest('button') || ev.target.tagName==='INPUT') return;
@@ -557,20 +605,53 @@ function renderShelf(){
     await saveSeries();
     renderUpcoming();
   }));
-  el.querySelectorAll('[data-inc]').forEach(b=>b.addEventListener('click', async ()=>{
-    const [sid,aid] = b.getAttribute('data-inc').split('|');
-    const s = series.find(s=>s.seriesId===sid);
-    const se = s.seasons.find(se=>se.aniListId===parseInt(aid));
-    const latest = latestAired(mediaCache[se.aniListId]);
-    if(se.watchedUpTo < latest) se.watchedUpTo++;
-    await saveSeries(); renderShelf();
+  el.querySelectorAll('[data-ep-toggle]').forEach(b=>b.addEventListener('click', (ev)=>{
+    ev.stopPropagation();
+    const id = parseInt(b.getAttribute('data-ep-toggle'));
+    if(openSeasons.has(id)) openSeasons.delete(id); else openSeasons.add(id);
+    renderShelf();
   }));
-  el.querySelectorAll('[data-dec]').forEach(b=>b.addEventListener('click', async ()=>{
-    const [sid,aid] = b.getAttribute('data-dec').split('|');
-    const s = series.find(s=>s.seriesId===sid);
-    const se = s.seasons.find(se=>se.aniListId===parseInt(aid));
-    if(se.watchedUpTo>0) se.watchedUpTo--;
-    await saveSeries(); renderShelf();
+}
+
+function findSeasonByAniListId(aniListId){
+  for(const s of series) for(const se of s.seasons) if(se.aniListId===aniListId) return {s, se};
+  return null;
+}
+
+async function renderEpisodeList(aniListId, holder){
+  holder.innerHTML = '<div class="ep-loading">Carico titoli episodi…</div>';
+  const found = findSeasonByAniListId(aniListId);
+  if(!found) return;
+  const { se } = found;
+  const m = mediaCache[aniListId];
+  const latest = latestAired(m);
+  const titles = await fetchEpisodeTitles(aniListId);
+  const titleByNum = {};
+  titles.forEach(t=>{ titleByNum[t.num] = t; });
+  const watchedSet = new Set(se.watchedEpisodes||[]);
+
+  let rows = '';
+  for(let n=1; n<=latest; n++){
+    const t = titleByNum[n];
+    const isWatched = watchedSet.has(n);
+    rows += `<div class="episode-row ${isWatched?'watched':''}">
+      <input type="checkbox" data-ep-check="${aniListId}|${n}" ${isWatched?'checked':''}>
+      ${t && t.thumb ? `<img src="${t.thumb}" alt="">` : ''}
+      <div class="etitle"><span class="en">Ep ${n}</span>${t && t.title ? t.title.replace(/^Episode\s+\d+\s*-?\s*/i,'') : ''}</div>
+    </div>`;
+  }
+  if(!latest){ holder.innerHTML = '<div class="ep-loading">Nessun episodio ancora uscito.</div>'; return; }
+  holder.innerHTML = `<div class="episode-list">${rows}</div>`;
+
+  holder.querySelectorAll('[data-ep-check]').forEach(cb=>cb.addEventListener('change', async ()=>{
+    const [aid, num] = cb.getAttribute('data-ep-check').split('|').map(Number);
+    const f = findSeasonByAniListId(aid);
+    if(!f) return;
+    const set = new Set(f.se.watchedEpisodes||[]);
+    if(cb.checked) set.add(num); else set.delete(num);
+    f.se.watchedEpisodes = [...set].sort((a,b)=>a-b);
+    await saveSeries();
+    renderShelf();
   }));
 }
 
