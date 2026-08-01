@@ -8,13 +8,13 @@
         "aniListId": 169755,
         "seasonNumber": 1,
         "seasonName": "BLEACH: Thousand-Year Blood War - The Conflict",
-        "watchedUpTo": 0
+        "watchedEpisodes": []
       },
       {
         "aniListId": 185874,
         "seasonNumber": 2,
         "seasonName": "BLEACH: Thousand-Year Blood War - The Calamity",
-        "watchedUpTo": 0
+        "watchedEpisodes": []
       }
     ]
   },
@@ -27,7 +27,7 @@
         "aniListId": 105333,
         "seasonNumber": 1,
         "seasonName": "Dr. STONE",
-        "watchedUpTo": 0
+        "watchedEpisodes": []
       }
     ]
   }
