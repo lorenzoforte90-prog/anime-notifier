@@ -52,7 +52,11 @@
           2,
           3,
           4,
-          6
+          5,
+          6,
+          7,
+          8,
+          9
         ]
       },
       {
@@ -64,14 +68,38 @@
     ]
   },
   {
-    "seriesId": "sr_11061_1785588160402",
-    "alias": "Hunter x Hunter (2011)",
-    "poster": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx11061-y5gsT1hoHuHw.png",
+    "seriesId": "sr_101922_1785588238089",
+    "alias": "Demon Slayer: Kimetsu no Yaiba",
+    "poster": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx101922-WBsBl0ClmgYL.jpg",
     "seasons": [
       {
-        "aniListId": 11061,
+        "aniListId": 101922,
         "seasonNumber": 1,
-        "seasonName": "Hunter x Hunter (2011)",
+        "seasonName": "Demon Slayer: Kimetsu no Yaiba",
+        "watchedEpisodes": []
+      },
+      {
+        "aniListId": 129874,
+        "seasonNumber": 2,
+        "seasonName": "Demon Slayer: Kimetsu no Yaiba Mugen Train Arc",
+        "watchedEpisodes": []
+      },
+      {
+        "aniListId": 142329,
+        "seasonNumber": 3,
+        "seasonName": "Demon Slayer: Kimetsu no Yaiba Entertainment District Arc",
+        "watchedEpisodes": []
+      },
+      {
+        "aniListId": 145139,
+        "seasonNumber": 4,
+        "seasonName": "Demon Slayer: Kimetsu no Yaiba Swordsmith Village Arc",
+        "watchedEpisodes": []
+      },
+      {
+        "aniListId": 166240,
+        "seasonNumber": 5,
+        "seasonName": "Demon Slayer: Kimetsu no Yaiba Hashira Training Arc",
         "watchedEpisodes": []
       }
     ]
