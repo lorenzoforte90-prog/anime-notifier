@@ -37,5 +37,24 @@
         "watchedEpisodes": []
       }
     ]
+  },
+  {
+    "seriesId": "sr_147105_1785588081090",
+    "alias": "Witch Hat Atelier",
+    "poster": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx147105-rwOX8qyUy8gV.jpg",
+    "seasons": [
+      {
+        "aniListId": 147105,
+        "seasonNumber": 1,
+        "seasonName": "Witch Hat Atelier",
+        "watchedEpisodes": []
+      },
+      {
+        "aniListId": 213702,
+        "seasonNumber": 2,
+        "seasonName": "Witch Hat Atelier Season 2",
+        "watchedEpisodes": []
+      }
+    ]
   }
 ]
