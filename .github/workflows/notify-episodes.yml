@@ -1,0 +1,30 @@
+name: Notifica nuovi episodi anime
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'   # ogni 3 ore
+  workflow_dispatch: {}       # permette di lanciarlo anche a mano da GitHub
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Esegui controllo episodi
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: node notify.js
+
+      - name: Salva lo stato aggiornato nel repo
+        run: |
+          git config user.name "anime-notifier-bot"
+          git config user.email "actions@github.com"
+          git add notify-state.json
+          git diff --staged --quiet || git commit -m "aggiorna stato notifiche"
+          git push
