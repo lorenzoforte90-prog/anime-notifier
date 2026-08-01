@@ -47,7 +47,9 @@
         "aniListId": 147105,
         "seasonNumber": 1,
         "seasonName": "Witch Hat Atelier",
-        "watchedEpisodes": []
+        "watchedEpisodes": [
+          1
+        ]
       },
       {
         "aniListId": 213702,
