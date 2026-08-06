@@ -1,3 +1,18 @@
 [
-  { "aniListId": 98460, "alias": "Dott Stone" }
+  {
+    "aniListId": 21,
+    "alias": "One Piece"
+  },
+  {
+    "aniListId": 185874,
+    "alias": "Bleach"
+  },
+  {
+    "aniListId": 195600,
+    "alias": "Daemons of the Shadow Realm"
+  },
+  {
+    "aniListId": 213702,
+    "alias": "Witch Hat Atelier Season 2"
+  }
 ]
