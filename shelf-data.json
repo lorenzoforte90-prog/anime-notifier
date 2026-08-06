@@ -66,5 +66,24 @@
         "watchedEpisodes": []
       }
     ]
+  },
+  {
+    "seriesId": "sr_182300_1786033783900",
+    "alias": "Wistoria: Wand and Sword",
+    "poster": "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx174576-tpKcHG0eO6CS.jpg",
+    "seasons": [
+      {
+        "aniListId": 174576,
+        "seasonNumber": 1,
+        "seasonName": "Wistoria: Wand and Sword",
+        "watchedEpisodes": []
+      },
+      {
+        "aniListId": 182300,
+        "seasonNumber": 2,
+        "seasonName": "Wistoria: Wand and Sword Season 2",
+        "watchedEpisodes": []
+      }
+    ]
   }
 ]
