@@ -2,7 +2,7 @@ name: Notifica nuovi episodi anime
 
 on:
   schedule:
-    - cron: '0 */3 * * *'   # ogni 3 ore
+    - cron: '0 7 * * *'   # una volta al giorno, 9:00 Italia (ora legale)
   workflow_dispatch: {}       # permette di lanciarlo anche a mano da GitHub
 
 jobs:
